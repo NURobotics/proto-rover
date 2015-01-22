@@ -31,9 +31,11 @@ public:
     };
   }
   void setSpeed(double speed);
-  bool drive(double speed=1.0);
-  bool stop();
-  void reset(int ppin, int epin);
+  void drive(double s=1.0);
+  bool setPhasePin(int pp);
+  bool setEnablePin(int ep);
+  void stop();
+  void reset(int ppin=-1, int epin=-1);
 private:
   int phase_pin;
   int enable_pin;  
@@ -51,10 +53,8 @@ public:
   void driveForward();
   void driveBackward();
   void setSpeed(double speed);
-  void setPhasePin();
-  void setEnablePin();
   void reset();
-  void reset(int left_phase, int left_enable, int right_phase, right_enable);
+  void reset(int left_phase, int left_enable, int right_phase, int right_enable);
   Motor motors[NUM_MOTORS];
 private:
   double speed;

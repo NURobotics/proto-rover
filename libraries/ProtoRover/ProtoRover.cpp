@@ -15,7 +15,7 @@ void Motor::reset(int ppin, int epin)
 
 bool Motor::setPhasePin(int pp)
 {
-  if(pp >=3 && pp <= 11
+  if(pp >=3 && pp <= 11 &&
      pp != 4 && pp != 7 && pp != 8) {
     phase_pin = pp;
     return true;
@@ -40,9 +40,9 @@ void Motor::setSpeed(double s)
   duty_cycle = constrain(speed*255, 0, 255);
 }
 
-Motor::drive(double speed)
+void Motor::drive(double s)
 {
-  setSpeed(speed);
+  setSpeed(s);
 }
 
 void Motor::stop()
@@ -60,7 +60,7 @@ void Rover::turnLeft()
 {
   motors[FRONT_LEFT].setDirection(FORWARD);
   motors[MID_LEFT].setDirection(FORWARD);
-  motors[BACK_LEFT].setDirection(FOWARD);
+  motors[BACK_LEFT].setDirection(FORWARD);
   motors[FRONT_RIGHT].setDirection(FORWARD);
   motors[MID_RIGHT].setDirection(FORWARD);
   motors[BACK_RIGHT].setDirection(FORWARD);
