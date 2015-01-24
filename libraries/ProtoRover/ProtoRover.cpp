@@ -56,6 +56,16 @@ void Rover::reset()
   for(int i = 0; i < NUM_MOTORS; i++) motors[i].reset();
 }
 
+void Rover::reset(int left_phase, int left_enable, int right_phase, int right_enable)
+{
+  motors[FRONT_LEFT].reset(left_phase, left_enable);
+  motors[MID_LEFT].reset(left_phase, left_enable);
+  motors[BACK_LEFT].reset(left_phase, left_enable);
+  motors[FRONT_RIGHT].reset(right_phase, right_enable);
+  motors[MID_RIGHT].reset(right_phase, right_enable);
+  motors[BACK_RIGHT].reset(right_phase, right_enable);
+}
+
 void Rover::turnLeft()
 {
   motors[FRONT_LEFT].setDirection(FORWARD);
