@@ -16,6 +16,8 @@ int command_time = 0;
 int command_timeout = 2000;
 char temp_command = '/0';
 char command = '/0';
+int speed = 0;
+int dir = 0;
 Rover hal9000;
 
 int counter = 0;
@@ -51,9 +53,22 @@ void loop()
   }
   else if(serial_state == WAIT_COMMAND) {
     if(waitForData(100)) {
-      buf = Serial.read();
-      if(isCommand(buf)) {
-        temp_command = buf;
+	int i = 0;
+	int num = 0;
+	char buf[4];
+	while(serial.available())
+	{
+		buf[i] = serial.read();
+		if (i>1)
+		{
+			num*=10;
+			num+=((int)buf[i]-48);
+		}
+    	}
+      if(isCommand(buf[0])) {
+        temp_command = buf[0];
+	speed = num;
+	dir = int(buf[1])-48;
         serial_state = END_COMMAND;
       }      
       else if(buf != '!') serial_state = START_COMMAND;
@@ -82,27 +97,34 @@ void loop()
 
 boolean isCommand(char c)
 {
-  return c == 'f' || c == 'b' || c == 'l' || c == 'r';
+  return c == 'x' || c == 'y';
 }
 
 void act()
 {
-  if(command == 'f') {
-    hal9000.driveForward();
-    hal9000.setSpeed(ROVER_SPEED);
-  }
-  else if(command == 'b') {
-    hal9000.driveBackward();
-    hal9000.setSpeed(ROVER_SPEED);
-  }
-  else if(command == 'l') {
-    hal9000.turnLeft();
-    hal9000.setSpeed(ROVER_SPEED);
-  }
-  else if(command == 'r') {
-    hal9000.turnRight();
-    hal9000.setSpeed(ROVER_SPEED);
-  }
+ 	if(command == 'x') 
+	{
+		if(dir == 1)
+		{
+			hal9000.driveForward();
+		}
+		else
+		{
+			hal9000.driveBackward();
+		}
+	hal9000.setSpeed(speed);
+	}
+	else if(command == 'y') {
+	    if(dir == 1)
+		{
+			hal9000.turnLeft();
+		}
+	    else
+		{
+			hal9000.turnRight();
+		}
+			hal9000.setSpeed(speed);
+  	}
   else {
     // Halt
     hal9000.setSpeed(0.);

@@ -6,6 +6,7 @@
 import serial
 import tty
 import termios, fcntl, sys, os
+import XboxController
 
 class RoverDriver(object):
   
@@ -37,14 +38,62 @@ class RoverDriver(object):
   def turn_right(self,duration):
     self.send_command('!r\n',duration)
 
+  def percentToSpeed(p):
+    if(p > 0):
+      dir = '1'
+    else:
+      dir = '0'
+
+    temp = int(255*abs(p))
+    temp = str(temp)
+    while len(temp)<3:
+      temp = '0'+temp
+    return dir+temp
+
+
+  def leftThumbX(self, xValue):
+    print xValue
+    self.send_command('!x'+percentToSpeed(xValue)+'\n',duration)
+    if xValue > 0:
+      
+      print "Right"
+    elif xValue < 0:
+      
+      print "Left"
+        
+  def leftThumbY(self, yValue):
+    self.send_command('!y'+percentToSpeed(yValue)+'\n',duration)
+    if yValue < 0:
+      
+      print "Forward"
+    elif yValue >0:
+      
+      print "Backwards"
+
 
 if __name__ == '__main__':
+  print "hi"  
+  xboxCont = XboxController.XboxController(
+    controllerCallBack = None,
+    joystickNo = 0,
+    deadzone = .1,
+    scale = 1,
+    invertYAxis = False)
+
+  
+
+
+
   proto_rover = None
   if len(sys.argv) > 1:
     proto_rover = RoverDriver(sys.argv[1])
   else:
     proto_rover = RoverDriver()
   fd = sys.stdin.fileno()
+
+  xboxCont.setupControlCallback(xboxCont.XboxControls.LTHUMBX, lambda (x): proto_rover.leftThumbX(x))
+  xboxCont.setupControlCallback(xboxCont.XboxControls.LTHUMBY, lambda (x): proto_rover.leftThumbY(x))
+  xboxCont.start()
 
   oldterm = termios.tcgetattr(fd)
   newattr = termios.tcgetattr(fd)
@@ -53,7 +102,7 @@ if __name__ == '__main__':
 
   oldflags = fcntl.fcntl(fd, fcntl.F_GETFL)
   fcntl.fcntl(fd, fcntl.F_SETFL, oldflags | os.O_NONBLOCK)
-
+  
   try:
     while 1:
       try:
